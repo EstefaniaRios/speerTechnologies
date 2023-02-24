@@ -1,0 +1,60 @@
+package src.testSelenium;
+import java.util.*;
+import Base.java;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class WikiLinkScraper {
+    public static void main(String[] args) {
+        // Accepts a Wikipedia link as input
+        String wikiLink = "https://www.wikipedia.org/";
+        if (wikiLink.contains("www.wikipedia.org"))
+        {
+            System.out.println("Valid Wikipedia link!");
+         
+        }
+        else {
+        	System.out.println("ERROR: NOT Valid Wikipedia link!");
+        }
+
+        // Accepts a valid integer between 1 to 20
+        int n = 1;
+        if (n < 1 || n > 20) {
+            System.out.println("Error: n should be between 1 and 20!");
+            return;
+        }
+        
+        //Above i used StackOVerflow and ChatGpt:
+
+        // Initialize the web driver
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\estefania.rios\\Desktop\\chromedriver\\chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+
+        // Scrape wiki links for n cycles
+        Set<String> links = new HashSet<String>();
+        links.add(wikiLink);
+        for (int i = 0; i < n; i++) {
+            Set<String> newLinks = new HashSet<String>();
+            for (String link : links) {
+                driver.get(link);
+                List<WebElement> anchorTags = driver.findElements(By.tagName("a"));
+                for (WebElement anchorTag : anchorTags) {
+                    String href = anchorTag.getAttribute("href");
+                    if (isValidWikiLink(href)) {
+                        newLinks.add(href);
+                    }
+                }
+            }
+            links.addAll(newLinks);
+        }
+        driver.quit();
+
+        // Print all the wiki links found
+        System.out.println(links);
+    }
+
+    // Check if the given link is a valid Wikipedia link
+    private static boolean isValidWikiLink(String link) {
+        return link.startsWith("https://en.wikipedia.org/wiki/");
+    }
+}
